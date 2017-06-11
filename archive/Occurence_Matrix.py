@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import division
 
 import argparse
 
@@ -46,12 +47,12 @@ if __name__ == "__main__":
             nonBinderOccurenceDict[residue][index] += 1
             index += 1
 
-    #Print the dictionaries as tables
+    # Print the dictionaries as tables
     print("BINDER OCCURRENCE MATRIX")
-    for key,value in sorted(binderOccurenceDict.items()):
-        print(key + ": " + str(value))
+    for key, value in sorted(binderOccurenceDict.items()):
+        print(key + ": " + str([x/len(binders) for x in value]))
 
     print("-----------------------------")
     print("NON-BINDER OCCURRENCE MATRIX")
     for key, value in sorted(nonBinderOccurenceDict.items()):
-        print(key + ": " + str(value))
+        print(key + ": " + str([x/len(nonBinders) for x in value]))

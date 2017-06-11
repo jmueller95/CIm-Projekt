@@ -39,6 +39,7 @@ tyr = AminoAcid('Y', "Moderate", 163, 5.7, 0.714)
 
 # List all amino acids and their one-letter-codes, then zip them to a dictionary
 # This dictionary, 'aminoAcidDict', will be accessed from the main program
-aminoAcidList = [ala, cys, asp, glu, ]  # TODO: Complete
-oneLetterCodeList = [acid.one_letter_code for acid in aminoAcidList]
+aminoAcidList = [ala, cys, asp, glu, phe, gly, his, ile, lys, leu, met, asn, pro, gln, arg, ser, thr, val, trp, tyr]
+oneLetterCodeList = [aa.one_letter_code for aa in aminoAcidList]
 aminoAcidDict = {key: value for (key, value) in zip(oneLetterCodeList, aminoAcidList)}
+
