@@ -59,6 +59,10 @@ if __name__ == "__main__":
     nonBinderIeps_POSITIONS = []
     binderHydrophobicity_POSITIONS = []
     nonBinderHydrophobicity_POSITIONS = []
+    binderPolarities_POSITIONS = []
+    nonBinderPolarities_POSITIONS = []
+    binderAreas_POSITIONS = []
+    nonBinderAreas_POSITIONS = []
     for i in range(9):
         binderWeights_POSITIONS.append([AminoAcid.aminoAcidDict.get(sequence[i]).weight for sequence in binders])
         nonBinderWeights_POSITIONS.append([AminoAcid.aminoAcidDict.get(sequence[i]).weight for sequence in nonBinders])
@@ -71,6 +75,15 @@ if __name__ == "__main__":
         nonBinderHydrophobicity_POSITIONS.append(
             [AminoAcid.aminoAcidDict.get(sequence[i]).hydrophobicity for sequence in nonBinders])
 
+        binderPolarities_POSITIONS.append(
+            [AminoAcid.aminoAcidDict.get(sequence[i]).polarity for sequence in binders])
+        nonBinderPolarities_POSITIONS.append(
+            [AminoAcid.aminoAcidDict.get(sequence[i]).polarity for sequence in nonBinders])
+
+        binderAreas_POSITIONS.append(
+            [AminoAcid.aminoAcidDict.get(sequence[i]).area for sequence in binders])
+        nonBinderAreas_POSITIONS.append(
+            [AminoAcid.aminoAcidDict.get(sequence[i]).area for sequence in nonBinders])
     # ----Code copied from Occurence_Matrix.py----------
     # Count the occurences at each position
     # First, create two dictionaries with one-letter-codes as keys and integer lists of length 9 as values
@@ -99,24 +112,21 @@ if __name__ == "__main__":
     # Visualize one position at a time
     for i in range(9):
         position = i  # Change this to view another position
-        # ax.set_xlabel("Molecular Weight")
-        # ax.set_ylabel("Isoelectric Point")
-        # ax.set_zlabel("Hydrophobicity")
         plt.clf()
-        plt.title("Nonbinder sequences at position " + str(position + 1))
-        plt.xlabel("Residue mass in u")
-        plt.ylabel("Isoelectric Point")
+        plt.title("Binder sequences at position " + str(position + 1))
+        plt.xlabel("Accessible contact area in Angstrom^2")
+        plt.ylabel("Polarity in Debye")
 
         scaling = 500
-        binderAreas = [scaling * np.pi * binderOccurenceDict[sequence[position]][position] / len(binders)
+        binderRadii = [scaling * np.pi * binderOccurenceDict[sequence[position]][position] / len(binders)
                        for sequence in binders]
-        nonBinderAreas = [scaling * np.pi * nonBinderOccurenceDict[sequence[position]][position] / len(nonBinders)
+        nonBinderRadii = [scaling * np.pi * nonBinderOccurenceDict[sequence[position]][position] / len(nonBinders)
                           for sequence in nonBinders]
 
-        plt.scatter(nonBinderWeights_POSITIONS[position], nonBinderIeps_POSITIONS[position], s=nonBinderAreas,
-                    c="red")
-        #plt.scatter(binderWeights_POSITIONS[position], binderIeps_POSITIONS[position], s=binderAreas,
-        #            c="green")
+        #plt.scatter(nonBinderAreas_POSITIONS[position], nonBinderPolarities_POSITIONS[position], s=nonBinderRadii,
+        #           c="red")
+        plt.scatter(binderAreas_POSITIONS[position], binderPolarities_POSITIONS[position], s=binderRadii,
+                    c="green")
         #plt.ylim(-0.1, 1.1)
         #plt.yticks(np.arange(0, 1.1, 0.2))
-        plt.savefig('../resources/scatterplots/WeightIEP_Nonbinder' + str(position + 1) + '.png')
+        plt.savefig('../resources/scatterplots/AreaPolarity_Binder' + str(position + 1) + '.png')
