@@ -20,27 +20,15 @@ with open(args.input, "r") as i:
             sequencesList.append(lineSplit[0])
             isBinderList.append(lineSplit[2] is "1")
 
-# Create a 2D-array of sequences, residue by residue
-residues = np.array([[residue for residue in sequence] for sequence in sequencesList])
-# residues' shape is 726*9
-
-# Create 2D arrays for each of the properties (not sure if we're actually gonna use this, 'residue' might be enough)
-# Weight
-weights = np.array(
-    [[aminoAcidDict.get(residue).weight for residue in sequence] for sequence in sequencesList])
-
-# IEP
-ieps = np.array(
-    [[aminoAcidDict.get(residue).iep for residue in sequence] for sequence in sequencesList])
-
-# Hydrophobicity
-hydrophobicities = np.array(
-    [[aminoAcidDict.get(residue).hydrophobicity for residue in sequence] for sequence in sequencesList])
-
-# Polarity
-polarities = np.array(
-    [[aminoAcidDict.get(residue).polarity for residue in sequence] for sequence in sequencesList])
-
-# Accessible Area
-areas = np.array(
-    [[aminoAcidDict.get(residue).area for residue in sequence] for sequence in sequencesList])
+# Create a 3D array of all the data necessary for the ANN
+# Its shape is 726*9*6, since there are 726 sequences in the training set, each sequence consists of 9 residues and
+# 6 properties are considered for each residue:
+# Its one-letter-code, weight, iep, hydrophobicity, polarity, and its area
+data = np.array([[(aminoAcidDict.get(residue).one_letter_code,
+                   aminoAcidDict.get(residue).weight,
+                   aminoAcidDict.get(residue).iep,
+                   aminoAcidDict.get(residue).hydrophobicity,
+                   aminoAcidDict.get(residue).polarity,
+                   aminoAcidDict.get(residue).area)
+                  for residue in sequence] for sequence in sequencesList])
+print(data)
