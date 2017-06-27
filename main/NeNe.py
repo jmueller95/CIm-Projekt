@@ -7,10 +7,10 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from keras.models import Sequential
 from keras.layers import Dense
+from sklearn.metrics import confusion_matrix, recall_score, matthews_corrcoef
+from numpy.random import seed  # Needed for seeding random numbers
 
-#Temporary import
-from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score, cohen_kappa_score
-
+seed(100)
 # Parse the input file
 parser = argparse.ArgumentParser(description="Occurence Matrix Generator")
 parser.add_argument('input', metavar='input file')
@@ -71,9 +71,22 @@ model.compile(loss='binary_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
-model.fit(x_train, y_train, epochs=10, batch_size=1, verbose=0)
+model.fit(x_train, y_train, epochs=1000, batch_size=len(x_train), verbose=1)
 
-y_pred = model.predict(x_test)
-print(y_test[:10])
-print(y_pred[:10])
-#print(confusion_matrix(y_test,y_pred))
+y_pred = model.predict(x_test).reshape(len(x_test))
+threshold = 0.1
+y_pred_threshold = [1 if value > threshold else 0 for value in y_pred]
+print(y_test[:100])
+print(y_pred_threshold)
+print(y_pred[:100])
+
+confMatrix = confusion_matrix(y_test, y_pred_threshold)
+print("Confusion matrix with following shape:\n"
+      "[[TN FP]\n"
+      " [FN TP]]")
+print(confusion_matrix(y_test, y_pred_threshold))
+print("Sensitivity/Recall=" + str(recall_score(y_test,y_pred_threshold)))
+specificity = float(confMatrix[0][0])/(confMatrix[0][0]+confMatrix[0][1]) # Couldn't find specificity in Scikit-learn
+print("Specificity=" + str(specificity))
+
+print("MCC=" + str(matthews_corrcoef(y_test,y_pred_threshold)))
