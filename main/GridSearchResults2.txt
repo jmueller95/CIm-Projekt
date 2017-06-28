@@ -1,0 +1,35 @@
+Results of second Grid Search for 'epochs' and 'batch_size'.
+Size of training set was 486.
+Best result is probably overfit, thus we choose 100 epochs (and stick with a batch size of 100).
+
+Best: 0.987213 using {'epochs': 250, 'batch_size': 100}
+0.818203 (0.009497) with: {'epochs': 10, 'batch_size': 100}
+0.833590 (0.026219) with: {'epochs': 20, 'batch_size': 100}
+0.851625 (0.013892) with: {'epochs': 50, 'batch_size': 100}
+0.902410 (0.014191) with: {'epochs': 100, 'batch_size': 100}
+0.967668 (0.006260) with: {'epochs': 200, 'batch_size': 100}
+0.987213 (0.006328) with: {'epochs': 250, 'batch_size': 100}
+0.804772 (0.019202) with: {'epochs': 10, 'batch_size': 200}
+0.829171 (0.026982) with: {'epochs': 20, 'batch_size': 200}
+0.818705 (0.025779) with: {'epochs': 50, 'batch_size': 200}
+0.859755 (0.010114) with: {'epochs': 100, 'batch_size': 200}
+0.898855 (0.020583) with: {'epochs': 200, 'batch_size': 200}
+0.964084 (0.009715) with: {'epochs': 250, 'batch_size': 200}
+0.745257 (0.043495) with: {'epochs': 10, 'batch_size': 300}
+0.815886 (0.031255) with: {'epochs': 20, 'batch_size': 300}
+0.849900 (0.023033) with: {'epochs': 50, 'batch_size': 300}
+0.853563 (0.017390) with: {'epochs': 100, 'batch_size': 300}
+0.910915 (0.019702) with: {'epochs': 200, 'batch_size': 300}
+0.928516 (0.015762) with: {'epochs': 250, 'batch_size': 300}
+0.717096 (0.027180) with: {'epochs': 10, 'batch_size': 400}
+0.794438 (0.019027) with: {'epochs': 20, 'batch_size': 400}
+0.825907 (0.029571) with: {'epochs': 50, 'batch_size': 400}
+0.817452 (0.019863) with: {'epochs': 100, 'batch_size': 400}
+0.899635 (0.006211) with: {'epochs': 200, 'batch_size': 400}
+0.910115 (0.035246) with: {'epochs': 250, 'batch_size': 400}
+0.655459 (0.029570) with: {'epochs': 10, 'batch_size': 486}
+0.761308 (0.044446) with: {'epochs': 20, 'batch_size': 486}
+0.815470 (0.023524) with: {'epochs': 50, 'batch_size': 486}
+0.800539 (0.006855) with: {'epochs': 100, 'batch_size': 486}
+0.863645 (0.023166) with: {'epochs': 200, 'batch_size': 486}
+0.892107 (0.013789) with: {'epochs': 250, 'batch_size': 486}

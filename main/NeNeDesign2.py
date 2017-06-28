@@ -50,17 +50,17 @@ x_train, x_test, y_train, y_test = train_test_split(annInput, isBinderList, test
 
 
 # Function for creating a model - needed for the keras classifier
-def create_model(neurons=1, init_mode='uniform', epochs=1, batch_size=1):
+def create_model(neurons=1, epochs=1, batch_size=1):
     model = Sequential()
 
     # Input layer with 9*5=45 input nodes - each property at every position
-    model.add(Dense(45, kernel_initializer=init_mode, activation='softplus', input_shape=(45,)))
+    model.add(Dense(45, kernel_initializer='uniform', activation='softplus', input_shape=(45,)))
 
     # Hidden layer with 17 nodes
-    model.add(Dense(17, kernel_initializer=init_mode, activation='softplus'))
+    model.add(Dense(17, kernel_initializer='uniform', activation='softplus'))
 
     # Output layer with 1 node
-    model.add(Dense(1, kernel_initializer=init_mode, activation='sigmoid'))
+    model.add(Dense(1, kernel_initializer='uniform', activation='sigmoid'))
 
     model.compile(loss='binary_crossentropy',
                   optimizer='adam')
@@ -72,7 +72,7 @@ def create_model(neurons=1, init_mode='uniform', epochs=1, batch_size=1):
 classifier = KerasClassifier(build_fn=create_model)
 
 # Define grid search parameters
-epochs = [1, 10, 25, 50, 100]
+epochs = [10, 20, 50, 100, 200, 250]
 batch_size = [100, 200, 300, 400, len(x_train)]
 param_grid = dict(epochs=epochs, batch_size=batch_size)
 grid = GridSearchCV(estimator=classifier, param_grid=param_grid, n_jobs=-1, scoring='roc_auc')
@@ -86,7 +86,3 @@ with open(os.path.join(os.getcwd(), 'GridSearchResults2.txt'), 'w') as output:
     params = grid_result.cv_results_['params']
     for mean, stdev, param in zip(means, stds, params):
         output.write("%f (%f) with: %r\n" % (mean, stdev, param))
-
-
-# Aus Effizienzgruenden nur kleines Trainingset (0.2) und nur 20 Durchlaeufe (epochs),
-# aber jetzt haben wir eine grobe Ahnung, welche Parameter wir nehmen sollen
