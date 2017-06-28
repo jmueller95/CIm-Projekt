@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from keras.models import Sequential
 from keras.layers import Dense
-from sklearn.metrics import confusion_matrix, recall_score, matthews_corrcoef
+from sklearn.metrics import confusion_matrix, recall_score, matthews_corrcoef, precision_score
 from numpy.random import seed  # Needed for seeding random numbers
 
 seed(100)
@@ -76,8 +76,11 @@ model.fit(x_train, y_train, epochs=1000, batch_size=len(x_train), verbose=1)
 y_pred = model.predict(x_test).reshape(len(x_test))
 threshold = 0.1
 y_pred_threshold = [1 if value > threshold else 0 for value in y_pred]
+print("y_test: ")
 print(y_test[:100])
+print("y_pred_threshold: ")
 print(y_pred_threshold)
+print("y_pred: ")
 print(y_pred[:100])
 
 confMatrix = confusion_matrix(y_test, y_pred_threshold)
@@ -85,8 +88,18 @@ print("Confusion matrix with following shape:\n"
       "[[TN FP]\n"
       " [FN TP]]")
 print(confusion_matrix(y_test, y_pred_threshold))
-print("Sensitivity/Recall=" + str(recall_score(y_test,y_pred_threshold)))
-specificity = float(confMatrix[0][0])/(confMatrix[0][0]+confMatrix[0][1]) # Couldn't find specificity in Scikit-learn
-print("Specificity=" + str(specificity))
 
-print("MCC=" + str(matthews_corrcoef(y_test,y_pred_threshold)))
+print("Sensitivity/Recall = " + str(recall_score(y_test,y_pred_threshold)))
+
+specificity = float(confMatrix[0][0])/(confMatrix[0][0]+confMatrix[0][1]) # Couldn't find specificity in Scikit-learn
+print("Specificity = " + str(specificity))
+
+print("MCC = " + str(matthews_corrcoef(y_test,y_pred_threshold)))
+
+# Precision
+print(precision_score(y_test, y_pred_threshold))
+
+import pandas as pd
+roc_data = zip(y_pred, y_pred_threshold)
+df = pd.DataFrame(roc_data)
+df.to_csv("ROC_Data.csv")
