@@ -9,7 +9,11 @@ from keras.models import Sequential
 from keras.layers import Dense
 from sklearn.metrics import confusion_matrix, recall_score, matthews_corrcoef
 from numpy.random import seed  # Needed for seeding random numbers
+from sklearn.model_selection import GridSearchCV
+from keras.wrappers.scikit_learn import KerasClassifier
+import os
 
+# Make sure random numbers are always the same
 seed(100)
 # Parse the input file
 parser = argparse.ArgumentParser(description="Occurence Matrix Generator")
@@ -41,52 +45,48 @@ data = np.array([[(aminoAcidDict.get(residue).one_letter_code,
 # Generate actual ANN input: one-letter-code is cut away, now there are only five numbers for each residue
 annInput = data[:, :, 1:6].reshape(726, 45)
 
-print(annInput)
 # Split data up into training and test sets
 x_train, x_test, y_train, y_test = train_test_split(annInput, isBinderList, test_size=0.33, random_state=0)
 
-# TODO: Is scaling necessary?
+
+# Function for creating a model - needed for the keras classifier
+def create_model(neurons=1, init_mode='uniform', epochs=1, batch_size=1):
+    model = Sequential()
+
+    # Input layer with 9*5=45 input nodes - each property at every position
+    model.add(Dense(45, kernel_initializer=init_mode, activation='softplus', input_shape=(45,)))
+
+    # Hidden layer with 17 nodes
+    model.add(Dense(17, kernel_initializer=init_mode, activation='softplus'))
+
+    # Output layer with 1 node
+    model.add(Dense(1, kernel_initializer=init_mode, activation='sigmoid'))
+
+    model.compile(loss='binary_crossentropy',
+                  optimizer='adam')
+    model.fit(x_train, y_train, epochs=epochs, verbose=1, batch_size=batch_size)
+    return model
 
 
+# Create classifier
+classifier = KerasClassifier(build_fn=create_model)
 
-# TODO: What other models/layers are there?
-model = Sequential()
+# Define grid search parameters
+epochs = [1, 10, 25, 50, 100]
+batch_size = [100, 200, 300, 400, len(x_train)]
+param_grid = dict(epochs=epochs, batch_size=batch_size)
+grid = GridSearchCV(estimator=classifier, param_grid=param_grid, n_jobs=-1, scoring='roc_auc')
+grid_result = grid.fit(x_train, y_train)
 
-# First try: Input layer with 9*5=45 input nodes - each property at every position
-# TODO: What activation function should we use? For the moment it's 'relu'
-model.add(Dense(45, activation='relu', input_shape=(45,)))
+# Write results to file
+with open(os.path.join(os.getcwd(), 'GridSearchResults2.txt'), 'w') as output:
+    output.write("Best: %f using %s\n" % (grid_result.best_score_, grid_result.best_params_))
+    means = grid_result.cv_results_['mean_test_score']
+    stds = grid_result.cv_results_['std_test_score']
+    params = grid_result.cv_results_['params']
+    for mean, stdev, param in zip(means, stds, params):
+        output.write("%f (%f) with: %r\n" % (mean, stdev, param))
 
-# Hidden layer with 5 nodes
-model.add(Dense(5, activation='relu'))
 
-# Output layer with 1 node
-model.add(Dense(1, activation='sigmoid'))
-
-# print(model.output_shape)
-# print(model.summary())
-# print(model.get_config())
-# print(model.get_weights())
-
-model.compile(loss='binary_crossentropy',
-              optimizer='adam',
-              metrics=['accuracy'])
-
-model.fit(x_train, y_train, epochs=1000, batch_size=len(x_train), verbose=1)
-
-y_pred = model.predict(x_test).reshape(len(x_test))
-threshold = 0.1
-y_pred_threshold = [1 if value > threshold else 0 for value in y_pred]
-print(y_test[:100])
-print(y_pred_threshold)
-print(y_pred[:100])
-
-confMatrix = confusion_matrix(y_test, y_pred_threshold)
-print("Confusion matrix with following shape:\n"
-      "[[TN FP]\n"
-      " [FN TP]]")
-print(confusion_matrix(y_test, y_pred_threshold))
-print("Sensitivity/Recall=" + str(recall_score(y_test,y_pred_threshold)))
-specificity = float(confMatrix[0][0])/(confMatrix[0][0]+confMatrix[0][1]) # Couldn't find specificity in Scikit-learn
-print("Specificity=" + str(specificity))
-
-print("MCC=" + str(matthews_corrcoef(y_test,y_pred_threshold)))
+# Aus Effizienzgruenden nur kleines Trainingset (0.2) und nur 20 Durchlaeufe (epochs),
+# aber jetzt haben wir eine grobe Ahnung, welche Parameter wir nehmen sollen
