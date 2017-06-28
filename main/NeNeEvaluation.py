@@ -72,15 +72,3 @@ specificity = float(confMatrix[0][0]) / (
     confMatrix[0][0] + confMatrix[0][1])  # Couldn't find specificity in Scikit-learn
 print("Specificity=" + str(specificity))
 print("MCC=" + str(matthews_corrcoef(y_test, y_pred_threshold)))
-
-# Model output shape
-print(model.output_shape)
-
-# Model summary
-print(model.summary())
-
-# Model config
-print(model.get_config())
-
-# List all weight tensors
-print(model.get_weights())
