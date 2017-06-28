@@ -59,7 +59,7 @@ model.fit(x_train, y_train, epochs=100, verbose=1, batch_size=100)
 
 # Prediction & Evaluation
 y_pred = model.predict(x_test).reshape(len(x_test))
-threshold = 0.2 # TODO: Is it possible to set this automatically?
+threshold = 0.2  # TODO: Is it possible to set this automatically?
 y_pred_threshold = [1 if value > threshold else 0 for value in y_pred]
 confMatrix = confusion_matrix(y_test, y_pred_threshold)
 print("Confusion matrix with following shape:\n"
@@ -72,3 +72,15 @@ specificity = float(confMatrix[0][0]) / (
     confMatrix[0][0] + confMatrix[0][1])  # Couldn't find specificity in Scikit-learn
 print("Specificity=" + str(specificity))
 print("MCC=" + str(matthews_corrcoef(y_test, y_pred_threshold)))
+
+# Model output shape
+print(model.output_shape)
+
+# Model summary
+print(model.summary())
+
+# Model config
+print(model.get_config())
+
+# List all weight tensors
+print(model.get_weights())
