@@ -2,13 +2,14 @@
 
 import argparse
 import numpy as np
+import os
 from AminoAcid import aminoAcidDict
-from sklearn.model_selection import train_test_split, StratifiedKFold
+from sklearn.model_selection import StratifiedKFold
 from keras.models import Sequential
 from keras.layers import Dense
-from sklearn.metrics import confusion_matrix, recall_score, matthews_corrcoef, accuracy_score
 from numpy.random import seed
-# Make sure random numbers are always the same (for reproducability
+
+# Make sure random numbers are always the same (for reproducibility)
 randomFix = 100
 seed(randomFix)
 # Parse the input file
@@ -40,13 +41,12 @@ data = np.array([[(aminoAcidDict.get(residue).one_letter_code,
                   for residue in sequence] for sequence in sequencesList])
 # Generate actual ANN input: one-letter-code is cut away, now there are only five numbers for each residue
 annInput = data[:, :, 1:6].reshape(726, 45)
-
-# Split data up into training and test sets - WE DO NOT DO THIS HERE SINCE WE WANT TO DO CROSS-VALIDATION!
-# x_train, x_test, y_train, y_test = train_test_split(annInput, isBinderList, test_size=0.33, random_state=0)
-
-# We want to evaluate our model with a stratified 10-fold cross validation
-kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=randomFix)
+# We want to evaluate our model with a stratified 121-fold cross validation, with 121 being a sixth of the data size
+# We don't want to use a larger fraction, for there are only 175 binders, so a 175+-fold cv wouldn't make sense.
+kfold = StratifiedKFold(n_splits=121, shuffle=True, random_state=randomFix)
 stratifiedCVScores = []
+# Define a string to store the results in (string is written to an output file afterwards
+outputString = ""
 for train, test in kfold.split(annInput, isBinderList):
     # Create model
     model = Sequential()  # Input layer with 9*5=45 input nodes - each property at every position
@@ -58,21 +58,27 @@ for train, test in kfold.split(annInput, isBinderList):
     # Output layer with 1 node
     model.add(Dense(1, kernel_initializer='uniform', activation='sigmoid'))
 
-    model.compile(loss='binary_crossentropy', optimizer='adam')
-    model.fit(x_train, y_train, epochs=100, verbose=1, batch_size=100)
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    # Split up data into training and test set
+    x_train = [list(annInput[i]) for i in train]
+    y_train = np.array([isBinderList[i] for i in train])
+    x_test = [list(annInput[i]) for i in test]
+    y_test = np.array([isBinderList[i] for i in test])
 
-# Prediction & Evaluation
-y_pred = model.predict(x_test).reshape(len(x_test))
-threshold = 0.2  # TODO: Is it possible to set this automatically?
-y_pred_binary = [1 if value > threshold else 0 for value in y_pred]
-confMatrix = confusion_matrix(y_test, y_pred_binary)
-print("Confusion matrix with following shape:\n"
-      "[[TN FP]\n"
-      " [FN TP]]")
-print(confusion_matrix(y_test, y_pred_binary))
-print("Accuracy=" + str(accuracy_score(y_test, y_pred_binary)))
-print("Sensitivity/Recall=" + str(recall_score(y_test, y_pred_binary)))
-specificity = float(confMatrix[0][0]) / (
-    confMatrix[0][0] + confMatrix[0][1])  # Couldn't find specificity in Scikit-learn
-print("Specificity=" + str(specificity))
-print("MCC=" + str(matthews_corrcoef(y_test, y_pred_binary)))
+    model.fit(x_train, y_train, epochs=100, verbose=0, batch_size=100)
+    # evaluate
+    scores = model.evaluate(x_test, y_test, verbose=0)
+    # Generate next part of output (percentage accuracy of the current model)
+    nextOutput = "%.2f%%" % (scores[1] * 100)
+    # Append it to the output string and directly print it
+    outputString += nextOutput + "\n"
+    print(nextOutput)
+    # Save scores for later
+    stratifiedCVScores.append(scores[1] * 100)
+# Calculate mean and standard deviation and put it in a string
+meanAndStdOutput = "Mean: %.2f%% (+/- %.2f%%)" % (np.mean(stratifiedCVScores), np.std(stratifiedCVScores))
+outputString += meanAndStdOutput
+print(meanAndStdOutput)
+# Write outputString to file
+with open(os.path.join(os.getcwd(), 'CrossValidationResults.txt'), 'w') as output:
+    output.write(outputString)
