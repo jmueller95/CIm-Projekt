@@ -1,7 +1,6 @@
 import AminoAcid
 import argparse
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
 if __name__ == "__main__":
@@ -26,7 +25,7 @@ if __name__ == "__main__":
                 else:
                     nonBinders.append(lineSplit[0])
 
-    # Let's try it position-wise
+    # Start position-wise analysis
     binderWeights_POSITIONS = []
     nonBinderWeights_POSITIONS = []
     binderIeps_POSITIONS = []
@@ -58,7 +57,7 @@ if __name__ == "__main__":
             [AminoAcid.aminoAcidDict.get(sequence[i]).area for sequence in binders])
         nonBinderAreas_POSITIONS.append(
             [AminoAcid.aminoAcidDict.get(sequence[i]).area for sequence in nonBinders])
-    # ----Code copied from Occurence_Matrix.py----------
+
     # Count the occurences at each position
     # First, create two dictionaries with one-letter-codes as keys and integer lists of length 9 as values
     binderOccurenceDict = {}
@@ -81,7 +80,6 @@ if __name__ == "__main__":
         for residue in seq:
             nonBinderOccurenceDict[residue][index] += 1
             index += 1
-    # -------------------------------------------------#
 
     # Visualize one position at a time
     for i in range(9):
@@ -97,10 +95,10 @@ if __name__ == "__main__":
         nonBinderRadii = [scaling * np.pi * nonBinderOccurenceDict[sequence[position]][position] / len(nonBinders)
                           for sequence in nonBinders]
 
-        #plt.scatter(nonBinderAreas_POSITIONS[position], nonBinderPolarities_POSITIONS[position], s=nonBinderRadii,
+        # plt.scatter(nonBinderAreas_POSITIONS[position], nonBinderPolarities_POSITIONS[position], s=nonBinderRadii,
         #           c="red")
         plt.scatter(binderAreas_POSITIONS[position], binderPolarities_POSITIONS[position], s=binderRadii,
                     c="green")
-        #plt.ylim(-0.1, 1.1)
-        #plt.yticks(np.arange(0, 1.1, 0.2))
+        # plt.ylim(-0.1, 1.1)
+        # plt.yticks(np.arange(0, 1.1, 0.2))
         plt.savefig('../resources/scatterplots/AreaPolarity_Binder' + str(position + 1) + '.png')
