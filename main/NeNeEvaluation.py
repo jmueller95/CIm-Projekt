@@ -41,44 +41,50 @@ data = np.array([[(aminoAcidDict.get(residue).one_letter_code,
                   for residue in sequence] for sequence in sequencesList])
 # Generate actual ANN input: one-letter-code is cut away, now there are only five numbers for each residue
 annInput = data[:, :, 1:6].reshape(726, 45)
-# We want to evaluate our model with a stratified 121-fold cross validation, with 121 being a sixth of the data size
-# We don't want to use a larger fraction, for there are only 175 binders, so a 175+-fold cv wouldn't make sense.
-kfold = StratifiedKFold(n_splits=121, shuffle=True, random_state=randomFix)
+# We want to evaluate our model with a stratified 10-fold stratified cross validation
+kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=randomFix)
 stratifiedCVScores = []
 # Define a string to store the results in (string is written to an output file afterwards
 outputString = ""
-for train, test in kfold.split(annInput, isBinderList):
-    # Create model
-    model = Sequential()  # Input layer with 9*5=45 input nodes - each property at every position
-    model.add(Dense(45, kernel_initializer='uniform', activation='softplus', input_shape=(45,)))
+iterations = 100
+for i in range(iterations):
+    outputString += "\nIteration No." + str(i+1) + "\n"
+    currentCVScores = []
+    for train, test in kfold.split(annInput, isBinderList):
+        # Create model
+        model = Sequential()  # Input layer with 9*5=45 input nodes - each property at every position
+        model.add(Dense(45, kernel_initializer='uniform', activation='softplus', input_shape=(45,)))
 
-    # Hidden layer with 17 nodes
-    model.add(Dense(17, kernel_initializer='uniform', activation='softplus'))
+        # Hidden layer with 17 nodes
+        model.add(Dense(17, kernel_initializer='uniform', activation='softplus'))
 
-    # Output layer with 1 node
-    model.add(Dense(1, kernel_initializer='uniform', activation='sigmoid'))
+        # Output layer with 1 node
+        model.add(Dense(1, kernel_initializer='uniform', activation='sigmoid'))
 
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-    # Split up data into training and test set
-    x_train = [list(annInput[i]) for i in train]
-    y_train = np.array([isBinderList[i] for i in train])
-    x_test = [list(annInput[i]) for i in test]
-    y_test = np.array([isBinderList[i] for i in test])
+        model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+        # Split up data into training and test set
+        x_train = [list(annInput[i]) for i in train]
+        y_train = np.array([isBinderList[i] for i in train])
+        x_test = [list(annInput[i]) for i in test]
+        y_test = np.array([isBinderList[i] for i in test])
 
-    model.fit(x_train, y_train, epochs=100, verbose=0, batch_size=100)
-    # evaluate
-    scores = model.evaluate(x_test, y_test, verbose=0)
-    # Generate next part of output (percentage accuracy of the current model)
-    nextOutput = "%.2f%%" % (scores[1] * 100)
-    # Append it to the output string and directly print it
-    outputString += nextOutput + "\n"
-    print(nextOutput)
-    # Save scores for later
-    stratifiedCVScores.append(scores[1] * 100)
-# Calculate mean and standard deviation and put it in a string
-meanAndStdOutput = "Mean: %.2f%% (+/- %.2f%%)" % (np.mean(stratifiedCVScores), np.std(stratifiedCVScores))
-outputString += meanAndStdOutput
-print(meanAndStdOutput)
+        model.fit(x_train, y_train, epochs=100, verbose=0, batch_size=100)
+        # evaluate
+        scores = model.evaluate(x_test, y_test, verbose=0)
+        # Generate next part of output (percentage accuracy of the current model)
+        nextOutput = "%.2f%%" % (scores[1] * 100)
+        # Append it to the output string and directly print it
+        outputString += nextOutput + "\n"
+        print(nextOutput)
+        # Save scores for later
+        currentCVScores.append(scores[1] * 100)
+    # Calculate mean and standard deviation and put it in a string
+    meanAndStdOutput = "Mean: %.2f%% (+/- %.2f%%)" % (np.mean(currentCVScores), np.std(currentCVScores))
+    outputString += meanAndStdOutput + "\n"
+    print(meanAndStdOutput)
+    stratifiedCVScores += currentCVScores
+overallMeanAndStdOutput = "Overall Mean: %.2f%% (+/- %.2f%%)" % (np.mean(stratifiedCVScores), np.std(stratifiedCVScores))
+outputString += overallMeanAndStdOutput + "\n"
 # Write outputString to file
 with open(os.path.join(os.getcwd(), 'CrossValidationResults.txt'), 'w') as output:
     output.write(outputString)

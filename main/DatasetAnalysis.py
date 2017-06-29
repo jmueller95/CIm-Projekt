@@ -26,32 +26,6 @@ if __name__ == "__main__":
                 else:
                     nonBinders.append(lineSplit[0])
 
-    # Create lists of summed up molecular weights of each sequence
-    binderWeights = [sum([AminoAcid.aminoAcidDict.get(aa).weight for aa in sequence]) for sequence in binders]
-    nonBinderWeights = [sum([AminoAcid.aminoAcidDict.get(aa).weight for aa in sequence]) for sequence in nonBinders]
-
-    # Create lists of mean iep
-    binderIeps = [sum([AminoAcid.aminoAcidDict.get(aa).iep for aa in sequence]) / len(sequence) for sequence in binders]
-    nonBinderIeps = [sum([AminoAcid.aminoAcidDict.get(aa).iep for aa in sequence]) /
-                     len(sequence) for sequence in nonBinders]
-
-    # Create lists of mean hydrophobicity
-    binderHydrophobicity = [sum([AminoAcid.aminoAcidDict.get(aa).hydrophobicity for aa in sequence]) /
-                            len(sequence) for sequence in binders]
-    nonBinderHydrophobicity = [sum([AminoAcid.aminoAcidDict.get(aa).hydrophobicity for aa in sequence]) /
-                               len(sequence) for sequence in nonBinders]
-
-    # Visualize
-    # fig = plt.figure()
-    # ax = fig.add_subplot(111, projection='3d')
-    # ax.scatter(binderWeights, binderIeps, binderHydrophobicity, c="green")
-    # ax.scatter(nonBinderWeights, nonBinderIeps, nonBinderHydrophobicity, c="red")
-    # ax.set_xlabel("Molecular Weight")
-    # ax.set_ylabel("Isoelectric Point")
-    # ax.set_zlabel("Hydrophobicity")
-    # plt.show()
-    # Doesn't show anything useful, however...
-
     # Let's try it position-wise
     binderWeights_POSITIONS = []
     nonBinderWeights_POSITIONS = []
