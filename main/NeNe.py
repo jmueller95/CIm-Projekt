@@ -8,6 +8,7 @@ from keras.models import Sequential
 from keras.layers import Dense
 from sklearn.metrics import confusion_matrix, recall_score, matthews_corrcoef, accuracy_score
 from numpy.random import seed
+
 # Make sure random numbers are always the same (for reproducability
 randomFix = 100
 seed(randomFix)
@@ -41,25 +42,21 @@ data = np.array([[(aminoAcidDict.get(residue).one_letter_code,
 # Generate actual ANN input: one-letter-code is cut away, now there are only five numbers for each residue
 annInput = data[:, :, 1:6].reshape(726, 45)
 
-# Split data up into training and test sets - WE DO NOT DO THIS HERE SINCE WE WANT TO DO CROSS-VALIDATION!
-# x_train, x_test, y_train, y_test = train_test_split(annInput, isBinderList, test_size=0.33, random_state=0)
+# Split data up into training and test sets
+x_train, x_test, y_train, y_test = train_test_split(annInput, isBinderList, test_size=0.33, random_state=0)
 
-# We want to evaluate our model with a stratified 10-fold cross validation
-kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=randomFix)
-stratifiedCVScores = []
-for train, test in kfold.split(annInput, isBinderList):
-    # Create model
-    model = Sequential()  # Input layer with 9*5=45 input nodes - each property at every position
-    model.add(Dense(45, kernel_initializer='uniform', activation='softplus', input_shape=(45,)))
+# Create model
+model = Sequential()  # Input layer with 9*5=45 input nodes - each property at every position
+model.add(Dense(45, kernel_initializer='uniform', activation='softplus', input_shape=(45,)))
 
-    # Hidden layer with 17 nodes
-    model.add(Dense(17, kernel_initializer='uniform', activation='softplus'))
+# Hidden layer with 17 nodes
+model.add(Dense(17, kernel_initializer='uniform', activation='softplus'))
 
-    # Output layer with 1 node
-    model.add(Dense(1, kernel_initializer='uniform', activation='sigmoid'))
+# Output layer with 1 node
+model.add(Dense(1, kernel_initializer='uniform', activation='sigmoid'))
 
-    model.compile(loss='binary_crossentropy', optimizer='adam')
-    model.fit(x_train, y_train, epochs=100, verbose=1, batch_size=100)
+model.compile(loss='binary_crossentropy', optimizer='adam')
+model.fit(x_train, y_train, epochs=100, verbose=1, batch_size=100)
 
 # Prediction & Evaluation
 y_pred = model.predict(x_test).reshape(len(x_test))
