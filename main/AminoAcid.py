@@ -8,12 +8,9 @@ class AminoAcid(object):
 
         self.weight = weight  # Molecular weight (in units, I guess...)
         self.iep = iep  # Isoelectric Point
-        self.hydrophobicity = hydrophobicity  # TODO: What unit does hydrophobicity have?
+        self.hydrophobicity = hydrophobicity
         self.polarity = polarity  # in Debye
         self.area = area  # Accessible contact area in Angstrom^2
-
-
-# TODO: Gibt es sinnvolle Methoden?
 # End of class definition
 
 # Instances for all possible 20 amino acids

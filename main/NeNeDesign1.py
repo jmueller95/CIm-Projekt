@@ -3,11 +3,9 @@
 import argparse
 import numpy as np
 from AminoAcid import aminoAcidDict
-from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from keras.models import Sequential
 from keras.layers import Dense
-from sklearn.metrics import confusion_matrix, recall_score, matthews_corrcoef
 from numpy.random import seed  # Needed for seeding random numbers
 from sklearn.model_selection import GridSearchCV
 from keras.wrappers.scikit_learn import KerasClassifier
@@ -16,7 +14,7 @@ import os
 # Make sure random numbers are always the same
 seed(100)
 # Parse the input file
-parser = argparse.ArgumentParser(description="Occurence Matrix Generator")
+parser = argparse.ArgumentParser()
 parser.add_argument('input', metavar='input file')
 args = parser.parse_args()
 # Create a list of sequences and a 0/1-list where position i is 1 if sequence i is a binder and 0 if it isn't

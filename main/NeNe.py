@@ -9,11 +9,11 @@ from keras.layers import Dense
 from sklearn.metrics import confusion_matrix, recall_score, matthews_corrcoef, accuracy_score
 from numpy.random import seed
 
-# Make sure random numbers are always the same (for reproducability
+# Make sure random numbers are always the same (for reproducibility)
 randomFix = 100
 seed(randomFix)
 # Parse the input file
-parser = argparse.ArgumentParser(description="Occurence Matrix Generator")
+parser = argparse.ArgumentParser()
 parser.add_argument('input', metavar='input file')
 args = parser.parse_args()
 # Create a list of sequences and a 0/1-list where position i is 1 if sequence i is a binder and 0 if it isn't
@@ -60,7 +60,7 @@ model.fit(x_train, y_train, epochs=100, verbose=1, batch_size=100)
 
 # Prediction & Evaluation
 y_pred = model.predict(x_test).reshape(len(x_test))
-threshold = 0.2  # TODO: Is it possible to set this automatically?
+threshold = 0.2
 y_pred_binary = [1 if value > threshold else 0 for value in y_pred]
 confMatrix = confusion_matrix(y_test, y_pred_binary)
 print("Confusion matrix with following shape:\n"
