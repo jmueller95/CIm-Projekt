@@ -93,6 +93,6 @@ print("MCC=" + str(matthews_corrcoef(y_test, y_pred_binary)))
 
 # Create CSV output for ROC Analysis with KNIME
 
-roc_data = zip(y_pred, y_test)
-df = pd.DataFrame(roc_data)
-df.to_csv("ROC_Data.csv")
+#roc_data = zip(y_pred, y_test)
+#df = pd.DataFrame(roc_data)
+#df.to_csv("ROC_Data.csv")
