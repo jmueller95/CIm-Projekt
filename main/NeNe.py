@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import pandas as pd
 import numpy as np
 from AminoAcid import aminoAcidDict
 from sklearn.model_selection import train_test_split, StratifiedKFold
@@ -64,10 +65,20 @@ model.add(Dense(1, kernel_initializer='uniform', activation='sigmoid'))
 model.compile(loss='binary_crossentropy', optimizer='adam')
 model.fit(x_train, y_train, epochs=100, verbose=1, batch_size=100)
 
-# Prediction & Evaluation
+# Prediction
 y_pred = model.predict(x_test).reshape(len(x_test))
-threshold = 0.2
+
+# Find threshold with maximal MCC
+thresholds = [i / 100.0 for i in range(100)]
+MCCs = []
+for t in thresholds:
+    y_pred_binary = [1 if value > t else 0 for value in y_pred]
+    MCCs.append(matthews_corrcoef(y_test, y_pred_binary))
+
+threshold = np.argmax(MCCs)/100.0
 y_pred_binary = [1 if value > threshold else 0 for value in y_pred]
+
+#Evaluation
 confMatrix = confusion_matrix(y_test, y_pred_binary)
 print("Confusion matrix with following shape:\n"
       "[[TN FP]\n"
@@ -80,7 +91,8 @@ specificity = float(confMatrix[0][0]) / (
 print("Specificity=" + str(specificity))
 print("MCC=" + str(matthews_corrcoef(y_test, y_pred_binary)))
 
-import pandas as pd
+# Create CSV output for ROC Analysis with KNIME
+
 roc_data = zip(y_pred, y_test)
 df = pd.DataFrame(roc_data)
 df.to_csv("ROC_Data.csv")

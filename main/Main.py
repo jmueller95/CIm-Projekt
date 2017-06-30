@@ -30,7 +30,7 @@ if __name__ == "__main__":
                       for residue in sequence] for sequence in sequencesList])
     annInput = data[:, :, 1:6].reshape(len(sequencesList), 45)
     predictedValues = model.predict(annInput).reshape(len(annInput))
-    threshold = 0.7  # TODO: Set best threshold from ROC analysis here!
+    threshold = 0.26
     prediction = [1 if value > threshold else 0 for value in predictedValues]
     with open(args.output, "w") as o:
         for (seq, pred) in zip(sequencesList, prediction):
