@@ -39,8 +39,14 @@ data = np.array([[(aminoAcidDict.get(residue).one_letter_code,
                    aminoAcidDict.get(residue).polarity,
                    aminoAcidDict.get(residue).area)
                   for residue in sequence] for sequence in sequencesList])
+print ("data: ")
+print(data)
+
 # Generate actual ANN input: one-letter-code is cut away, now there are only five numbers for each residue
 annInput = data[:, :, 1:6].reshape(726, 45)
+
+print ("annInput: ")
+print (annInput)
 
 # Split data up into training and test sets
 x_train, x_test, y_train, y_test = train_test_split(annInput, isBinderList, test_size=0.33, random_state=0)
@@ -73,3 +79,8 @@ specificity = float(confMatrix[0][0]) / (
     confMatrix[0][0] + confMatrix[0][1])  # Couldn't find specificity in Scikit-learn
 print("Specificity=" + str(specificity))
 print("MCC=" + str(matthews_corrcoef(y_test, y_pred_binary)))
+
+import pandas as pd
+roc_data = zip(y_pred, y_test)
+df = pd.DataFrame(roc_data)
+df.to_csv("ROC_Data.csv")
