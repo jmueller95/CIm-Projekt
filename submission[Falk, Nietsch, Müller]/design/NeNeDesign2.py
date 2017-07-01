@@ -3,11 +3,9 @@
 import argparse
 import numpy as np
 from AminoAcid import aminoAcidDict
-from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from keras.models import Sequential
 from keras.layers import Dense
-from sklearn.metrics import confusion_matrix, recall_score, matthews_corrcoef
 from numpy.random import seed  # Needed for seeding random numbers
 from sklearn.model_selection import GridSearchCV
 from keras.wrappers.scikit_learn import KerasClassifier
@@ -50,7 +48,7 @@ x_train, x_test, y_train, y_test = train_test_split(annInput, isBinderList, test
 
 
 # Function for creating a model - needed for the keras classifier
-def create_model(neurons=1, epochs=1, batch_size=1):
+def create_model(epochs=1, batch_size=1):
     model = Sequential()
 
     # Input layer with 9*5=45 input nodes - each property at every position

@@ -48,7 +48,7 @@ stratifiedCVScores = []
 outputString = ""
 iterations = 100
 for i in range(iterations):
-    outputString += "\nIteration No." + str(i+1) + "\n"
+    outputString += "\nIteration No." + str(i + 1) + "\n"
     currentCVScores = []
     for train, test in kfold.split(annInput, isBinderList):
         # Create model
@@ -83,7 +83,8 @@ for i in range(iterations):
     outputString += meanAndStdOutput + "\n"
     print(meanAndStdOutput)
     stratifiedCVScores += currentCVScores
-overallMeanAndStdOutput = "Overall Mean: %.2f%% (+/- %.2f%%)" % (np.mean(stratifiedCVScores), np.std(stratifiedCVScores))
+overallMeanAndStdOutput = "Overall Mean: %.2f%% (+/- %.2f%%)" % (
+np.mean(stratifiedCVScores), np.std(stratifiedCVScores))
 outputString += overallMeanAndStdOutput + "\n"
 # Write outputString to file
 with open(os.path.join(os.getcwd(), 'CrossValidationResults.txt'), 'w') as output:

@@ -1,21 +1,25 @@
 class AminoAcid(object):
-    # Konstruktor
+    # Constructor
     def __init__(self, one_letter_code, flexibility, weight, iep, hydrophobicity, polarity, area):
         self.one_letter_code = one_letter_code
 
         self.flexibility = flexibility  # Flexibility of the side chain,
         # one of ["None", "Low", "Limited", "Moderate", "High", "Restricted"]
 
-        self.weight = weight  # Molecular weight (in units, I guess...)
+        self.weight = weight  # Molecular weight
         self.iep = iep  # Isoelectric Point
         self.hydrophobicity = hydrophobicity
         self.polarity = polarity  # in Debye
         self.area = area  # Accessible contact area in Angstrom^2
+
+
 # End of class definition
 
 # Instances for all possible 20 amino acids
-# Data resource: https://www.ncbi.nlm.nih.gov/Class/Structure/aa/aa_explorer.cgi
+# Data resource: https://www.ncbi.nlm.nih.gov/Class/Structure/aa/aa_explorer.cgi, and
+# Bhaskaran, R., Ponnuswamy, P.K.: Positional flexibilities of amino acid residues in globular proteins
 # Format: (one_letter_code, flexibility, weight, iep, hydrophobicity, polarity, area)
+# Note: Flexibilities were not used in the final program
 ala = AminoAcid('A', "Limited", 71, 6.0, 0.806, 0.0, 10.0)
 cys = AminoAcid('C', "Low", 103, 5.0, 0.721, 1.5, 3.8)
 asp = AminoAcid('D', "Moderate", 115, 3.0, 0.417, 49.7, 18.3)

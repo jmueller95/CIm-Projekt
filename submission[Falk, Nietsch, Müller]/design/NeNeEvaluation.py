@@ -4,7 +4,7 @@ import argparse
 import pandas as pd
 import numpy as np
 from AminoAcid import aminoAcidDict
-from sklearn.model_selection import train_test_split, StratifiedKFold
+from sklearn.model_selection import train_test_split
 from keras.models import Sequential
 from keras.layers import Dense
 from sklearn.metrics import confusion_matrix, recall_score, matthews_corrcoef, accuracy_score
@@ -40,14 +40,9 @@ data = np.array([[(aminoAcidDict.get(residue).one_letter_code,
                    aminoAcidDict.get(residue).polarity,
                    aminoAcidDict.get(residue).area)
                   for residue in sequence] for sequence in sequencesList])
-print ("data: ")
-print(data)
 
 # Generate actual ANN input: one-letter-code is cut away, now there are only five numbers for each residue
 annInput = data[:, :, 1:6].reshape(726, 45)
-
-print ("annInput: ")
-print (annInput)
 
 # Split data up into training and test sets
 x_train, x_test, y_train, y_test = train_test_split(annInput, isBinderList, test_size=0.33, random_state=0)
@@ -75,10 +70,10 @@ for t in thresholds:
     y_pred_binary = [1 if value > t else 0 for value in y_pred]
     MCCs.append(matthews_corrcoef(y_test, y_pred_binary))
 
-threshold = np.argmax(MCCs)/100.0
+threshold = np.argmax(MCCs) / 100.0
 y_pred_binary = [1 if value > threshold else 0 for value in y_pred]
 
-#Evaluation
+# Evaluation
 confMatrix = confusion_matrix(y_test, y_pred_binary)
 print("Confusion matrix with following shape:\n"
       "[[TN FP]\n"

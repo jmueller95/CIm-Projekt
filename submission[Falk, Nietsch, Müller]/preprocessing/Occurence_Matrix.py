@@ -50,9 +50,9 @@ if __name__ == "__main__":
     # Print the dictionaries as tables
     print("BINDER OCCURRENCE MATRIX")
     for key, value in sorted(binderOccurenceDict.items()):
-        print(key + ": " + str([x/len(binders) for x in value]))
+        print(key + ": " + str([x / len(binders) for x in value]))
 
     print("-----------------------------")
     print("NON-BINDER OCCURRENCE MATRIX")
     for key, value in sorted(nonBinderOccurenceDict.items()):
-        print(key + ": " + str([x/len(nonBinders) for x in value]))
+        print(key + ": " + str([x / len(nonBinders) for x in value]))
